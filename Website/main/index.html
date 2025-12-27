@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaTech</title>
+    <link rel="stylesheet" href="../main/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="../main/chip.png" type="image/x-icon">
+</head>
+
+<body>
+    <nav>
+        <div class="logo"><i class="fa-solid fa-microchip"></i> NOVATECH</div>
+
+        <ul class="nav-links">
+            <li><a href="../main/index.html">Home</a></li>
+            <li><a href="../services/main.html">Services</a></li>
+            <li><a href="../contact/contact.html">Contact</a></li>
+        </ul>
+
+        <div>
+            <div id="guest-nav">
+                <a href="../username/login.html"
+                    style="color: rgb(197, 191, 191); text-decoration:none; margin-right:15px; font-size:14px">Login</a>
+                <a href="../username/register.html" class="btn-submit"
+                    style="padding: 8px 20px; font-size:14px; text-decoration:none; color:black">Register</a>
+            </div>
+
+            <div id="user-nav" class="hidden">
+                <div id="user-info">
+                    <span id="username-display">Hi, User</span>
+                    <button id="btn-logout" onclick="handleLogout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="hero-text">
+            <h1 style="font-size: 60px; line-height: 1.2; margin-bottom: 20px;">
+                The future is <br><span style="color: var(--primary)">Digital</span>
+            </h1>
+            <p class="page-desc">A comprehensive technology solution that empowers businesses to break through and
+                accelerate growth.</p>
+            <a href="../services/services.html" class="btn-submit" style="text-decoration: none;">Explore now</a>
+        </div>
+        <div class="hero-img">
+            <img src="../main/React-icon.svg" alt="React Logo" class="react-logo-img fa-spin">
+        </div>
+    </div>
+
+    <footer>&copy; 2025 NovaTech By TrMinh</footer>
+    <script src="../main/script.js"></script>
+</body>
+
+</html>
