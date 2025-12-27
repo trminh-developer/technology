@@ -1,5 +1,6 @@
 // Hiệu ứng xuất hiện khi tải trang 
 document.addEventListener("DOMContentLoaded", () => {
+    checkLoginStatus();
     const content = document.querySelector('.container');
     if (content) {
         content.style.opacity = 0;
@@ -11,12 +12,27 @@ document.addEventListener("DOMContentLoaded", () => {
             content.style.transform = "translateY(0)";
         }, 100);
     }
+    const passwordInput = document.getElementById('login-pass');
+    const toggleBtn = document.getElementById('toggle-btn');
+
+    // Xử lý nút hiện/ẩn mật khẩu
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', () => {
+            // Kiểm tra type hiện tại
+            const currentType = passwordInput.getAttribute('type');
+
+            // Đổi type: password <-> text
+            const newType = currentType === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', newType);
+        });
+    }
+    setupPassswordToggle();
 });
 // 1. Kiểm tra trạng thái Đăng nhập khi tải trang
 document.addEventListener("DOMContentLoaded", () => {
     checkLoginStatus();
 
-    // Hiệu ứng Fade-in trang (Code cũ)
+    // Hiệu ứng Fade-in trang
     const content = document.querySelector('.container');
     if (content) {
         content.style.opacity = 0;
@@ -28,6 +44,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
     }
 });
+
+// Hàm ẩn/hiển password
+function setupPassswordToggle() {
+
+    const passwordInput = document.getElementById('login-pass');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const eyeOpen = document.getElementById('eye-open');
+    const eyeClose = document.getElementById('eye-close');
+
+    if (toggleBtn && passwordInput && eyeOpen && eyeClose) {
+        toggleBtn.addEventListener('click', () => {
+            const currentType = passwordInput.getAttribute('type');
+            if (currentType === 'passowrd') {
+                passwordInput.setAttribute('type', 'text');
+                eyeOpen.classList.add('hidden');
+                eyeClose.classList.remove('hidden');
+            } else {
+                passwordInput.setAttribute('type', 'password');
+                eyeOpen.classList.remove('hidden');
+                eyeClose.classList.add('hidden');
+            }
+        });
+    }
+}
 
 // 2. Hàm xử lý Đăng Ký
 function handleRegister(event) {
@@ -47,17 +87,28 @@ function handleRegister(event) {
 
 // 3. Hàm xử lý Đăng Nhập
 function handleLogin(event) {
-    event.preventDefault();
+    event.preventDefault(); // Ngăn load lại trang
+
+    // 1. Lấy giá trị người dùng nhập
     const username = document.getElementById('login-user').value;
     const pass = document.getElementById('login-pass').value;
 
-    // Lấy dữ liệu đã lưu
-    const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+    // 2. Lấy dữ liệu đã lưu trong LocalStorage
+    const storedUserRaw = localStorage.getItem('currentUser');
 
-    if (storedUser && username === storedUser.username && pass === storedUser.pass) {
+    if (!storedUserRaw) {
+        alert("Chưa có tài khoản nào được đăng ký!");
+        return;
+    }
+
+    const storedUser = JSON.parse(storedUserRaw);
+
+    // 3. So sánh thông tin
+    // Trim() giúp loại bỏ khoảng trắng thừa nếu người dùng lỡ tay copy paste
+    if (username.trim() === storedUser.username && pass === storedUser.pass) {
         localStorage.setItem('isLoggedIn', 'true'); // Đánh dấu đã đăng nhập
         alert("Đăng nhập thành công!");
-        window.location.href = "index.html"; // Chuyển về trang chủ
+        window.location.href = "../main/index.html"; // Chuyển về trang chủ
     } else {
         alert("Sai tên đăng nhập hoặc mật khẩu!");
     }

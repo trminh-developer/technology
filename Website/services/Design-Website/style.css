@@ -212,42 +212,6 @@ nav {
     border-color: var(--primary);
 }
 
-.password-container {
-    position: relative;
-    width: 100%;
-}
-
-.password-container input {
-    width: 100%;
-    padding-right: 45px;
-    padding-left: 12px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    background: #0a0e17;
-    border: 1px solid #333;
-    color: white;
-    border-radius: 8px;
-    outline: none;
-}
-
-.show-pass {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 5px;
-    color: var(--text-gray);
-    margin: 0;
-}
-
-.show-pass:hover {
-    color: var(--primary);
-}
-
 .btn-submit {
     padding: 12px 30px;
     background: var(--primary);
