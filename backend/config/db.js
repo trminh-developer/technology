@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize');
+const { Pool } = require('pg');
 require('dotenv').config();
 
 if (!process.env.DATABASE_URL) {
@@ -6,15 +6,11 @@ if (!process.env.DATABASE_URL) {
     process.exit(1);
 }
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  logging: false,
-  dialectOptions: {
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
     ssl: {
-      require: true,
-      rejectUnauthorized: false
+        rejectUnauthorized: false
     }
-  }
 });
 
-module.exports = sequelize;
+module.exports = pool;

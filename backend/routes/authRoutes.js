@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const authController = require('../controllers/authController');
+const authenticateToken = require('../middlewares/authMiddleware');
 
 router.get('/health', (req, res) => {
     res.json({ message: 'Auth API is running' });
 });
 
-// Các API Login, Register, Profile sẽ được định nghĩa ở đây
-// bằng cách gọi đến authController
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.get('/profile', authenticateToken, authController.profile);
 
 module.exports = router;
