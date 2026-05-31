@@ -64,7 +64,7 @@ async function handleRegister(event) {
 
         if (response.ok) {
             alert("Đăng ký thành công! Hãy đăng nhập.");
-            window.location.href = "login.html";
+            window.location.href = "/Website/username/login.html";
         } else {
             alert(data.error || "Đăng ký thất bại!");
         }
@@ -93,7 +93,7 @@ async function handleLogin(event) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('currentUser', JSON.stringify(data.user));
             alert("Đăng nhập thành công!");
-            window.location.href = "../main/index.html";
+            window.location.href = "/Website/main/index.html";
         } else {
             alert(data.error || "Sai tên đăng nhập hoặc mật khẩu!");
         }
@@ -106,11 +106,7 @@ async function handleLogin(event) {
 function handleLogout() {
     localStorage.removeItem('isLoggedIn');
     alert("Đã đăng xuất!");
-
-    const loginPath = window.location.pathname.includes('/username/')
-        ? 'login.html'
-        : '../username/login.html';
-    window.location.href = loginPath;
+    window.location.href = "/Website/username/login.html";
 }
 
 function checkLoginStatus() {
