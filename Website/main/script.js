@@ -1,133 +1,134 @@
-// Hiệu ứng xuất hiện khi tải trang 
 document.addEventListener("DOMContentLoaded", () => {
     checkLoginStatus();
-    const content = document.querySelector('.container');
-    if (content) {
-        content.style.opacity = 0;
-        content.style.transform = "translateY(20px)";
-        content.style.transition = "all 0.8s ease";
-
-        setTimeout(() => {
-            content.style.opacity = 1;
-            content.style.transform = "translateY(0)";
-        }, 100);
-    }
-    const passwordInput = document.getElementById('login-pass');
-    const toggleBtn = document.getElementById('toggle-btn');
-
-    // Xử lý nút hiện/ẩn mật khẩu
-    if (toggleBtn && passwordInput) {
-        toggleBtn.addEventListener('click', () => {
-            // Kiểm tra type hiện tại
-            const currentType = passwordInput.getAttribute('type');
-
-            // Đổi type: password <-> text
-            const newType = currentType === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', newType);
-        });
-    }
-    setupPassswordToggle();
-});
-// 1. Kiểm tra trạng thái Đăng nhập khi tải trang
-document.addEventListener("DOMContentLoaded", () => {
-    checkLoginStatus();
-
-    // Hiệu ứng Fade-in trang
-    const content = document.querySelector('.container');
-    if (content) {
-        content.style.opacity = 0;
-        content.style.transform = "translateY(20px)";
-        content.style.transition = "all 0.8s ease";
-        setTimeout(() => {
-            content.style.opacity = 1;
-            content.style.transform = "translateY(0)";
-        }, 100);
-    }
+    setupPageFadeIn();
+    setupPasswordToggle();
 });
 
-// Hàm ẩn/hiển password
-function setupPassswordToggle() {
+function setupPageFadeIn() {
+    const content = document.querySelector('.container');
+    if (!content) return;
 
+    content.style.opacity = 0;
+    content.style.transform = "translateY(20px)";
+    content.style.transition = "all 0.8s ease";
+
+    setTimeout(() => {
+        content.style.opacity = 1;
+        content.style.transform = "translateY(0)";
+    }, 100);
+}
+
+function setupPasswordToggle() {
     const passwordInput = document.getElementById('login-pass');
     const toggleBtn = document.getElementById('toggle-btn');
+    const eyeIcon = document.getElementById('eye-icon');
     const eyeOpen = document.getElementById('eye-open');
     const eyeClose = document.getElementById('eye-close');
 
-    if (toggleBtn && passwordInput && eyeOpen && eyeClose) {
-        toggleBtn.addEventListener('click', () => {
-            const currentType = passwordInput.getAttribute('type');
-            if (currentType === 'passowrd') {
-                passwordInput.setAttribute('type', 'text');
-                eyeOpen.classList.add('hidden');
-                eyeClose.classList.remove('hidden');
-            } else {
-                passwordInput.setAttribute('type', 'password');
-                eyeOpen.classList.remove('hidden');
-                eyeClose.classList.add('hidden');
-            }
-        });
-    }
+    if (!toggleBtn || !passwordInput) return;
+
+    toggleBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+
+        if (eyeIcon) {
+            eyeIcon.classList.toggle('bi-eye', isPassword);
+            eyeIcon.classList.toggle('bi-eye-slash', !isPassword);
+        }
+
+        if (eyeOpen && eyeClose) {
+            eyeOpen.classList.toggle('hidden', isPassword);
+            eyeClose.classList.toggle('hidden', !isPassword);
+        }
+    });
 }
 
-// 2. Hàm xử lý Đăng Ký
-function handleRegister(event) {
-    event.preventDefault(); // Chặn load lại trang
-    const username = document.getElementById('reg-user').value;
-    const pass = document.getElementById('reg-pass').value;
+async function handleRegister(event) {
+    event.preventDefault();
 
-    if (!username || !pass) return alert("Vui lòng nhập đủ thông tin!");
+    const username = document.getElementById('reg-user').value.trim();
+    const password = document.getElementById('reg-pass').value;
 
-    // Lưu vào Local Storage (Giả lập Database)
-    const user = { username, pass };
-    localStorage.setItem('currentUser', JSON.stringify(user));
-
-    alert("Đăng ký thành công! Hãy đăng nhập.");
-    window.location.href = "login.html";
-}
-
-// 3. Hàm xử lý Đăng Nhập
-function handleLogin(event) {
-    event.preventDefault(); // Ngăn load lại trang
-
-    // 1. Lấy giá trị người dùng nhập
-    const username = document.getElementById('login-user').value;
-    const pass = document.getElementById('login-pass').value;
-
-    // 2. Lấy dữ liệu đã lưu trong LocalStorage
-    const storedUserRaw = localStorage.getItem('currentUser');
-
-    if (!storedUserRaw) {
-        alert("Chưa có tài khoản nào được đăng ký!");
+    if (!username || !password) {
+        alert("Vui lòng nhập đủ thông tin!");
         return;
     }
 
-    const storedUser = JSON.parse(storedUserRaw);
+    try {
+        const response = await fetch('http://localhost:3000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
 
-    // 3. So sánh thông tin
-    // Trim() giúp loại bỏ khoảng trắng thừa nếu người dùng lỡ tay copy paste
-    if (username.trim() === storedUser.username && pass === storedUser.pass) {
-        localStorage.setItem('isLoggedIn', 'true'); // Đánh dấu đã đăng nhập
-        alert("Đăng nhập thành công!");
-        window.location.href = "../main/index.html"; // Chuyển về trang chủ
-    } else {
-        alert("Sai tên đăng nhập hoặc mật khẩu!");
+        if (response.ok) {
+            alert("Đăng ký thành công! Hãy đăng nhập.");
+            window.location.href = "login.html";
+        } else {
+            alert(data.error || "Đăng ký thất bại!");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Lỗi kết nối tới server!");
     }
 }
 
-// 4. Hàm xử lý Đăng Xuất
+async function handleLogin(event) {
+    event.preventDefault();
+
+    const username = document.getElementById('login-user').value.trim();
+    const password = document.getElementById('login-pass').value;
+
+    try {
+        const response = await fetch('http://localhost:3000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            alert("Đăng nhập thành công!");
+            window.location.href = "../main/index.html";
+        } else {
+            alert(data.error || "Sai tên đăng nhập hoặc mật khẩu!");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Lỗi kết nối tới server!");
+    }
+}
+
 function handleLogout() {
     localStorage.removeItem('isLoggedIn');
     alert("Đã đăng xuất!");
-    window.location.href = "login.html";
+
+    const loginPath = window.location.pathname.includes('/username/')
+        ? 'login.html'
+        : '../username/login.html';
+    window.location.href = loginPath;
 }
 
-// 5. Hàm kiểm tra & Cập nhật giao diện Navbar
 function checkLoginStatus() {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+    const storedUserRaw = localStorage.getItem('currentUser');
 
-    const guestNav = document.getElementById('guest-nav'); // Menu cho khách
-    const userNav = document.getElementById('user-nav');   // Menu cho thành viên
+    let storedUser = null;
+    if (storedUserRaw) {
+        try {
+            storedUser = JSON.parse(storedUserRaw);
+        } catch {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+        }
+    }
+
+    const guestNav = document.getElementById('guest-nav');
+    const userNav = document.getElementById('user-nav');
     const usernameDisplay = document.getElementById('username-display');
 
     if (isLoggedIn && storedUser) {
@@ -139,33 +140,36 @@ function checkLoginStatus() {
         if (userNav) userNav.classList.add('hidden');
     }
 }
-// Gửi Thông tin support
-function kiemTraVaGui() {
-    // 1. Lấy giá trị từ các ô nhập
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    var message = document.getElementById("message").value;
 
-    // 2. Kiểm tra xem có ô nào bị bỏ trống không
-    if (name == "") {
-        alert("Vui lòng nhập Họ và tên!");
-        document.getElementById("name").focus(); // Đưa con trỏ chuột vào ô này
-        return; // Dừng lại, không gửi
-    }
+async function kiemTraVaGui(event) {
+    if (event) event.preventDefault();
+    
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message").value.trim();
 
-    if (email == "") {
-        alert("Vui lòng nhập Email!");
-        document.getElementById("email").focus();
+    if (!name || !email || !message) {
+        alert("Vui lòng nhập đủ Họ tên, Email và nội dung tư vấn!");
         return;
     }
 
-    if (message == "") {
-        alert("Vui lòng nhập nội dung tư vấn!");
-        document.getElementById("message").focus();
-        return;
-    }
+    try {
+        const response = await fetch('http://localhost:3000/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, message })
+        });
+        const data = await response.json();
 
-    // 3. Nếu tất cả đã nhập đủ -> Hiện thông báo và Gửi Form
-    alert("Đã gửi thành công!");
-    document.getElementById("myForm").submit(); // Lệnh gửi form đi
+        if (response.ok) {
+            alert("Đã gửi thành công!");
+            const form = document.getElementById("myForm");
+            if (form) form.reset();
+        } else {
+            alert(data.error || "Lỗi gửi liên hệ!");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Lỗi kết nối tới server!");
+    }
 }
