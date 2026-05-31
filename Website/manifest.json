@@ -1,0 +1,21 @@
+{
+  "name": "NovaTech System",
+  "short_name": "NovaTech",
+  "description": "A comprehensive technology solution",
+  "start_url": "/Website/main/index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/Website/main/chip.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Website/main/chip.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
