@@ -1,6 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const SECRET_KEY = process.env.SECRET_KEY || 'novatech_super_secret_key';
+
+const authenticateAdmin = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.sendStatus(403);
+        if (user.role !== 'Admin') return res.status(403).json({ error: 'Access denied. Admins only.' });
+        req.user = user;
+        next();
+    });
+};
+
+// Sử dụng middleware bảo vệ cho toàn bộ route admin
+router.use(authenticateAdmin);
 
 // Lấy danh sách Users
 router.get('/users', async (req, res) => {

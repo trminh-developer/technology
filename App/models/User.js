@@ -35,6 +35,10 @@ const User = sequelize.define('User', {
     status: {
         type: DataTypes.STRING,
         defaultValue: 'Active' // 'Active', 'Inactive', 'Pending'
+    },
+    avatar: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
 

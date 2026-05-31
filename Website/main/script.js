@@ -130,7 +130,13 @@ function checkLoginStatus() {
     if (isLoggedIn && storedUser) {
         if (guestNav) guestNav.classList.add('hidden');
         if (userNav) userNav.classList.remove('hidden');
-        if (usernameDisplay) usernameDisplay.innerText = "Hi, " + storedUser.username;
+        if (usernameDisplay) {
+            usernameDisplay.innerText = "Hi, " + storedUser.username;
+            const profileLink = usernameDisplay.closest('a');
+            if (profileLink) {
+                profileLink.href = storedUser.role === 'Admin' ? '/Website/Admin/profile.html' : '/Website/profile/index.html';
+            }
+        }
     } else {
         if (guestNav) guestNav.classList.remove('hidden');
         if (userNav) userNav.classList.add('hidden');

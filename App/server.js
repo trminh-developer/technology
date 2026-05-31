@@ -13,6 +13,8 @@ const PORT = 3000;
 // Middlewares
 app.use(cors()); // Cho phép Frontend gọi API
 app.use(express.json()); // Phân tích JSON từ Client
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -20,7 +22,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 
 // Tự động đồng bộ database
-sequelize.sync().then(async () => {
+sequelize.sync({ alter: true }).then(async () => {
     console.log('Database synced!');
     
     // Tạo sẵn Admin nếu chưa có

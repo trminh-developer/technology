@@ -3,8 +3,25 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-const SECRET_KEY = 'novatech_super_secret_key';
+require('dotenv').config();
+const SECRET_KEY = process.env.SECRET_KEY || 'novatech_super_secret_key';
+
+// Cấu hình Multer
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = path.join(__dirname, '../uploads');
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'avatar-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 
 // Đăng ký (Register)
 router.post('/register', async (req, res) => {
@@ -78,7 +95,7 @@ const authenticateToken = (req, res, next) => {
 router.get('/profile', authenticateToken, async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id, {
-            attributes: ['id', 'username', 'email', 'role', 'status', 'name', 'phone']
+            attributes: ['id', 'username', 'email', 'role', 'status', 'name', 'phone', 'avatar']
         });
         if (!user) return res.status(404).json({ error: 'User not found' });
         res.json(user);
@@ -115,9 +132,28 @@ router.put('/profile', authenticateToken, async (req, res) => {
         }
 
         await user.save();
-        res.json({ message: 'Cập nhật thành công', user: { name: user.name, username: user.username, email: user.email, phone: user.phone } });
+        res.json({ message: 'Cập nhật thành công', user: { name: user.name, username: user.username, email: user.email, phone: user.phone, avatar: user.avatar } });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Upload Avatar
+router.post('/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ error: 'Vui lòng chọn file' });
+        
+        const user = await User.findByPk(req.user.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        
+        // Lưu URL
+        user.avatar = '/uploads/' + req.file.filename;
+        await user.save();
+        
+        res.json({ message: 'Tải ảnh lên thành công', avatar: user.avatar });
+    } catch (error) {
+        console.error('Lỗi upload ảnh:', error);
         res.status(500).json({ error: 'Lỗi server' });
     }
 });
